@@ -1,12 +1,10 @@
 # MariaDB
 
-### Galera
+## Galera
 
-For improved reliability, MariaDB can be used in a cluster for production sites.
-This example, when placed in `.lagoon.yml` will enable Galera on the
-`production` branch.
+For improved reliability, MariaDB can be used in a cluster for production sites. This example, when placed in `.lagoon.yml` will enable Galera on the `production` branch.
 
-```
+```text
 environments:
   production:
     types:
@@ -15,7 +13,7 @@ environments:
 
 also you will need to change your service definition in your `docker-compose.yml`
 
-```
+```text
   mariadb:
     image: amazeeio/mariadb-galera-drupal
     labels:
@@ -26,13 +24,9 @@ also you will need to change your service definition in your `docker-compose.yml
       << : *default-environment
 ```
 
-It is recommended to configure the environment before the initial deploy of the
-production site, otherwise manual intervention may be needed from your lagoon
-administrator.
+It is recommended to configure the environment before the initial deploy of the production site, otherwise manual intervention may be needed from your lagoon administrator.
 
-### Additional MariaDB Logging
+## Additional MariaDB Logging
 
-During the course of development, it may be necessary to enable either query
-logging or slow query logging. To do so just set the environment variables
-`MARIADB_LOG_SLOW` or `MARIADB_LOG_QUERIES`. This can be done in
-`docker-compose.yaml`.
+During the course of development, it may be necessary to enable either query logging or slow query logging. To do so just set the environment variables `MARIADB_LOG_SLOW` or `MARIADB_LOG_QUERIES`. This can be done in `docker-compose.yaml`.
+
