@@ -8,50 +8,49 @@ Please check the [official Docs of Docker](https://docs.docker.com/engine/instal
 
 ### On Linux Install Docker Compose
 
-Docker compose is included in Docker for Mac installations.  For linux installations see the directions here: [https://docs.docker.com/compose/install/](https://docs.docker.com/compose/install/).
+Docker compose is included in Docker for Mac installations. For linux installations see the directions here: [https://docs.docker.com/compose/install/](https://docs.docker.com/compose/install/).
 
 ## Start Services
 
-1. Add `192.168.99.0/24` to insecure registries in Docker (see [here](https://docs.docker.com/registry/insecure/) how to do that). Also make sure that you give your Docker Host minimum 4 CPUs and 4GB Ram.
+1. Add `192.168.99.0/24` to insecure registries in Docker \(see [here](https://docs.docker.com/registry/insecure/) how to do that\). Also make sure that you give your Docker Host minimum 4 CPUs and 4GB Ram.
 
+Important: Lagoon consists of a lot of Services and Docker Images, building and running them locally might not even be necessary. We're using make \(see the [Makefile](https://github.com/amazeeio/lagoon/blob/master/Makefile)\) in order to only build the needed Docker Images specifically for a part of Lagoon.
 
-Important: Lagoon consists of a lot of Services and Docker Images, building and running them locally might not even be necessary.
-We're using make (see the [Makefile](https://github.com/amazeeio/lagoon/blob/master/Makefile)) in order to only build the needed Docker Images specifically for a part of Lagoon.
-
-All of it is based around tests. So if you like to only build the part that is needed to work on the Node.js deployment, you can run the tests with `make tests/node`, this will then setup (openshift, building images, services) all the needed stuff for the Node.js deployment part.
+All of it is based around tests. So if you like to only build the part that is needed to work on the Node.js deployment, you can run the tests with `make tests/node`, this will then setup \(openshift, building images, services\) all the needed stuff for the Node.js deployment part.
 
 If you would still like to build and start all services, go ahead:
 
-2. Build images
+1. Build images
 
-```sh
+```bash
 make build
 ```
 
-3. start Lagoon Services
+1. start Lagoon Services
 
-```sh
+```bash
 make up
 ```
 
-4. Follow the Services logs
+1. Follow the Services logs
 
-```sh
+```bash
 make logs
 ```
 
-5. run tests (read [Tests](tests.md) to learn more about testing)
-```sh
-make tests
-```
+1. run tests \(read [Tests](tests.md) to learn more about testing\)
 
-6. Look what happens in OpenShift: [https://192.168.99.100:8443/console](https://192.168.99.100:8443/console) (developer/developer)
+   ```bash
+   make tests
+   ```
+
+2. Look what happens in OpenShift: [https://192.168.99.100:8443/console](https://192.168.99.100:8443/console) \(developer/developer\)
 
 ## Local Development
 
 Most services are written in Node.js. As many of these services share similar Node code and Node Packages, we're using a new feature of yarn, called `yarn workspaces`. Yarn Workspaces needs a package.json in the projects root directory that defines the workspaces.
 
-The development of the services can happen directly within Docker. Each container for each service is setup in a way that it's source code is mounted into the running container (see [docker-compose.yml](../using_lagoon/docker-compose_yml.md). Node itself is watching the code via `nodemon` and restarts the node process automatically on a change.
+The development of the services can happen directly within Docker. Each container for each service is setup in a way that it's source code is mounted into the running container \(see [docker-compose.yml](../using_lagoon/docker-compose_yml.md). Node itself is watching the code via `nodemon` and restarts the node process automatically on a change.
 
 ### lagoon-commons
 
@@ -67,23 +66,20 @@ The API uses a puppet compatible yaml format to store it's data. On production t
 
 Rebuild the images via
 
-```sh
+```bash
 make clean
 make build
 ```
 
-**I get errors about missing node_modules content when I try to build / run a NodeJS based image**
+**I get errors about missing node\_modules content when I try to build / run a NodeJS based image**
 
 Make sure to run `yarn` in lagoon's root directory, since some services have common dependencies managed by `yarn` workspaces.
 
 **My builds can't resolve domains**
 
-Some ISPs set up a "search domain" to catch domain name errors. Virtualbox will copy this setting
-into minishift which can cause domain resolution errors in the openshift pods. To check for this
-problem, look at the `/etc/resolv.conf` in your failing pod and check for errant search domains.
+Some ISPs set up a "search domain" to catch domain name errors. Virtualbox will copy this setting into minishift which can cause domain resolution errors in the openshift pods. To check for this problem, look at the `/etc/resolv.conf` in your failing pod and check for errant search domains.
 
-![OpenShift pod resolver settings](../images/pod_search_domains.jpg)
+![OpenShift pod resolver settings](../../.gitbook/assets/pod_search_domains.jpg)
 
-To fix, you must remove the extra search domain. Login to the minishift vm (`minishift ssh`) and
-remove the setting from `/etc/resolv.conf`. Restart openshift docker, `sudo docker restart origin`.
-Redeploy `docker-host` in the `lagoon` project.
+To fix, you must remove the extra search domain. Login to the minishift vm \(`minishift ssh`\) and remove the setting from `/etc/resolv.conf`. Restart openshift docker, `sudo docker restart origin`. Redeploy `docker-host` in the `lagoon` project.
+
