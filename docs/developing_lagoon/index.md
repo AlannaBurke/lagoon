@@ -8,54 +8,53 @@ Please check the [official Docs of Docker](https://docs.docker.com/engine/instal
 
 ### On Linux Install Docker Compose
 
-Docker compose is included in Docker for Mac installations.  For linux installations see the directions here: [https://docs.docker.com/compose/install/](https://docs.docker.com/compose/install/).
+Docker compose is included in Docker for Mac installations. For linux installations see the directions here: [https://docs.docker.com/compose/install/](https://docs.docker.com/compose/install/).
 
 ## Install KVM
 
-For GNU/Linux hosts, we are using KVM as default virtualization engine to run Openshift Minishift VM. For installation instuctions, see here:
-[https://docs.okd.io/latest/minishift/getting-started/setting-up-virtualization-environment.html#for-linux](https://docs.okd.io/latest/minishift/getting-started/setting-up-virtualization-environment.html#for-linux)
+For GNU/Linux hosts, we are using KVM as default virtualization engine to run Openshift Minishift VM. For installation instuctions, see here: [https://docs.okd.io/latest/minishift/getting-started/setting-up-virtualization-environment.html\#for-linux](https://docs.okd.io/latest/minishift/getting-started/setting-up-virtualization-environment.html#for-linux)
 
 ## Install VirtualBox
 
-For hosts other than GNU/Linux, we are using VitualBox to run the Openshift Minishift VM. For download and installation instructions see here:
-[https://www.virtualbox.org/](https://www.virtualbox.org/)
+For hosts other than GNU/Linux, we are using VitualBox to run the Openshift Minishift VM. For download and installation instructions see here: [https://www.virtualbox.org/](https://www.virtualbox.org/)
 
 ## Start Services
 
-1. Add `192.168.42.0/24` to insecure registries in Docker (see [here](https://docs.docker.com/registry/insecure/) how to do that). Also make sure that you give your Docker Host minimum 4 CPUs and 4GB Ram.
+1. Add `192.168.42.0/24` to insecure registries in Docker \(see [here](https://docs.docker.com/registry/insecure/) how to do that\). Also make sure that you give your Docker Host minimum 4 CPUs and 4GB Ram.
 
-Important: Lagoon consists of a lot of Services and Docker Images, building and running them locally might not even be necessary.
-We're using make (see the [Makefile](https://github.com/amazeeio/lagoon/blob/master/Makefile)) in order to only build the needed Docker Images specifically for a part of Lagoon.
+Important: Lagoon consists of a lot of Services and Docker Images, building and running them locally might not even be necessary. We're using make \(see the [Makefile](https://github.com/amazeeio/lagoon/blob/master/Makefile)\) in order to only build the needed Docker Images specifically for a part of Lagoon.
 
-All of it is based around tests. So if you like to only build the part that is needed to work on the Node.js deployment, you can run the tests with `make tests/node`, this will then setup (openshift, building images, services) all the needed stuff for the Node.js deployment part.
+All of it is based around tests. So if you like to only build the part that is needed to work on the Node.js deployment, you can run the tests with `make tests/node`, this will then setup \(openshift, building images, services\) all the needed stuff for the Node.js deployment part.
 
 If you would still like to build and start all services, go ahead:
 
-2\. Build images
+2. Build images
 
-```sh
+```bash
 make build
 ```
 
-3\. start Lagoon Services
+3. start Lagoon Services
 
-```sh
+```bash
 make up
 ```
 
-4\. Follow the Services logs
+4. Follow the Services logs
 
-```sh
+```bash
 make logs
 ```
 
-5\. run tests (read [Tests](tests.md) to learn more about testing)
-```sh
+5. run tests \(read [Tests](tests.md) to learn more about testing\)
+
+```bash
 make tests
 ```
 
-6\. Look what happens in OpenShift (credentials: developer/developer).
-```sh
+6. Look what happens in OpenShift \(credentials: developer/developer\).
+
+```bash
 echo "visit https://$(minishift --profile lagoon ip):8443/console"
 ```
 
@@ -63,7 +62,7 @@ echo "visit https://$(minishift --profile lagoon ip):8443/console"
 
 Most services are written in Node.js. As many of these services share similar Node code and Node Packages, we're using a new feature of yarn, called `yarn workspaces`. Yarn Workspaces needs a package.json in the projects root directory that defines the workspaces.
 
-The development of the services can happen directly within Docker. Each container for each service is setup in a way that it's source code is mounted into the running container (see [docker-compose.yml](../using_lagoon/docker-compose_yml.md). Node itself is watching the code via `nodemon` and restarts the node process automatically on a change.
+The development of the services can happen directly within Docker. Each container for each service is setup in a way that it's source code is mounted into the running container \(see [docker-compose.yml](../using_lagoon/docker-compose_yml.md). Node itself is watching the code via `nodemon` and restarts the node process automatically on a change.
 
 ### lagoon-commons
 
@@ -79,26 +78,22 @@ The API uses a puppet compatible yaml format to store it's data. On production t
 
 Rebuild the images via
 
-```sh
+```bash
 make clean
 make build
 ```
 
-**I get errors about missing node_modules content when I try to build / run a NodeJS based image**
+**I get errors about missing node\_modules content when I try to build / run a NodeJS based image**
 
 Make sure to run `yarn` in lagoon's root directory, since some services have common dependencies managed by `yarn` workspaces.
 
 **My builds can't resolve domains**
 
-Some ISPs set up a "search domain" to catch domain name errors. Virtualbox will copy this setting
-into minishift which can cause domain resolution errors in the openshift pods. To check for this
-problem, look at the `/etc/resolv.conf` in your failing pod and check for errant search domains.
+Some ISPs set up a "search domain" to catch domain name errors. Virtualbox will copy this setting into minishift which can cause domain resolution errors in the openshift pods. To check for this problem, look at the `/etc/resolv.conf` in your failing pod and check for errant search domains.
 
-![OpenShift pod resolver settings](../images/pod_search_domains.jpg)
+![OpenShift pod resolver settings](../../.gitbook/assets/pod_search_domains.jpg)
 
-To fix, you must remove the extra search domain. Login to the minishift vm (`minishift ssh`) and
-remove the setting from `/etc/resolv.conf`. Restart openshift docker, `sudo docker restart origin`.
-Redeploy `docker-host` in the `lagoon` project.
+To fix, you must remove the extra search domain. Login to the minishift vm \(`minishift ssh`\) and remove the setting from `/etc/resolv.conf`. Restart openshift docker, `sudo docker restart origin`. Redeploy `docker-host` in the `lagoon` project.
 
+[Instructions for debugging the API with VSCode](api-debugging.md)
 
-[Instructions for debugging the API with VSCode](./api-debugging.md)

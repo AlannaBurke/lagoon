@@ -1,31 +1,30 @@
 # Environment Variables
 
-It is common to store API Tokens or credentials for applications in environment variables.
-Following best practices those credentials are different per environment. We allow each environment to use a separate
-set of environment variables defined in Environment Variables or Environment Files.
+It is common to store API Tokens or credentials for applications in environment variables. Following best practices those credentials are different per environment. We allow each environment to use a separate set of environment variables defined in Environment Variables or Environment Files.
 
-As there can be environment variables defined in either the Dockerfile of during runtime (via API Environment Variables), we have an hierarchy of Environment variables: Environment variables defined in lower numbers are stronger
+As there can be environment variables defined in either the Dockerfile of during runtime \(via API Environment Variables\), we have an hierarchy of Environment variables: Environment variables defined in lower numbers are stronger
 
-1. Environment variables (defined via Lagoon API) - Environment specific
-2. Environment variables (defined via Lagoon API) - Project wide
-3. Environment variables defined in Dockerfile (`ENV` command)
-4. Environment variables defined in `.lagoon.env.$BRANCHNAME` (if file exists and where $BRANCHNAME is the Branch this Dockerimage has been built for), use this for overwriting variables for only specific branches
-5. Environment variables defined in `.lagoon.env` (if exists), use this for overwriting variables for all branches
+1. Environment variables \(defined via Lagoon API\) - Environment specific
+2. Environment variables \(defined via Lagoon API\) - Project wide
+3. Environment variables defined in Dockerfile \(`ENV` command\)
+4. Environment variables defined in `.lagoon.env.$BRANCHNAME` \(if file exists and where $BRANCHNAME is the Branch this Dockerimage has been built for\), use this for overwriting variables for only specific branches
+5. Environment variables defined in `.lagoon.env` \(if exists\), use this for overwriting variables for all branches
 6. Environment variables defined in `.env`
 7. Environment variables defined in `.env.defaults`
 
-## Environment Variables (Lagoon API)
+## Environment Variables \(Lagoon API\)
 
-We suggest to use the Lagoon API environment variable system for variables that you would like to not be existing in the Git Repo (like secrets or API keys), as they could be leaked by somebody having them on their local development environment.
+We suggest to use the Lagoon API environment variable system for variables that you would like to not be existing in the Git Repo \(like secrets or API keys\), as they could be leaked by somebody having them on their local development environment.
 
-The Lagoon API allows you to define Project wide or Environment specific variables, additionally they can be defined for a scope only buildtime or runtime. They are all created via the Lagoon GraphQL API, read more how to use the GraphQL API at [Using Lagoon » GraphQL API](./graphql_api.md).
+The Lagoon API allows you to define Project wide or Environment specific variables, additionally they can be defined for a scope only buildtime or runtime. They are all created via the Lagoon GraphQL API, read more how to use the GraphQL API at [Using Lagoon » GraphQL API](graphql_api.md).
 
-### Runtime Environment Variables (Lagoon API)
+### Runtime Environment Variables \(Lagoon API\)
 
 Runtime Environment Variables are automatically made available in all containers, but they are only added or updated after an environment has been redeployed.
 
-This defines a project wide runtime variable (available in all environments) for the project with id `463`:
-```
+This defines a project wide runtime variable \(available in all environments\) for the project with id `463`:
+
+```text
 mutation addRuntimeEnv {
   addEnvVariable(
     input:{
@@ -41,8 +40,9 @@ mutation addRuntimeEnv {
 }
 ```
 
-This defines a environment id `546` specific runtime variable (available only in that specific environment):
-```
+This defines a environment id `546` specific runtime variable \(available only in that specific environment\):
+
+```text
 mutation addRuntimeEnv {
   addEnvVariable(
     input:{
@@ -58,16 +58,17 @@ mutation addRuntimeEnv {
 }
 ```
 
-### Buildtime Environment Variables (Lagoon API)
+### Buildtime Environment Variables \(Lagoon API\)
 
 Buildtime Environment Variables are only available during a Build and need to be consumed in Dockerfiles via:
 
-```
+```text
 ARG MYVARIABLENAME
 ```
 
-This defines a project wide buildtime variable (available in all environments) for the project with id `463`:
-```
+This defines a project wide buildtime variable \(available in all environments\) for the project with id `463`:
+
+```text
 mutation addBuildtimeEnv {
   addEnvVariable(
     input:{
@@ -82,20 +83,23 @@ mutation addBuildtimeEnv {
 }
 ```
 
-This defines a environment id `546` specific buildtime variable (available only in that specific environment):
-```
+This defines a environment id `546` specific buildtime variable \(available only in that specific environment\):
+
+```text
 mutation addBuildtimeEnv {
   addEnvVariable(input:{type:ENVIRONMENT, typeId:546, scope:BUILD, name:"MYVARIABLENAME", value:"MyVariableValue"}) {
     id
   }
 }
 ```
-### Container Registry Environment Variables (Lagoon API)
 
-Container Registry Environment Variables are only available during a Build and are used when attempting to log in to a private registry. It is used to store the password for the user defined in [Specials » `container-registries`](./lagoon_yml.md). They can be applied at the project or environment level.
+### Container Registry Environment Variables \(Lagoon API\)
 
-This defines a project wide container registry variable (available in all environments) for the project with id `463`:
-```
+Container Registry Environment Variables are only available during a Build and are used when attempting to log in to a private registry. It is used to store the password for the user defined in [Specials » `container-registries`](lagoon_yml.md). They can be applied at the project or environment level.
+
+This defines a project wide container registry variable \(available in all environments\) for the project with id `463`:
+
+```text
 mutation addContainerRegistryEnv {
   addEnvVariable(
     input:{
@@ -110,8 +114,9 @@ mutation addContainerRegistryEnv {
 }
 ```
 
-This defines a environment id `546` specific container registry variable (available only in that specific environment):
-```
+This defines a environment id `546` specific container registry variable \(available only in that specific environment\):
+
+```text
 mutation addContainerRegistryEnv {
   addEnvVariable(
     input:{
@@ -126,24 +131,25 @@ mutation addContainerRegistryEnv {
 }
 ```
 
-## Environment Files (existing directly in the Git Repo)
+## Environment Files \(existing directly in the Git Repo\)
 
 If you have environment variables that are safe to be saved within a Git repository, we suggest to add them directly into the Git Repo. As these variables will also be available within local development enviornments and are therfore more portable.
 
 The Syntax in the environment files is as following:
 
-```
+```text
 MYVARIABLENAME="MyVariableValue"
 MVARIABLENUMBER=4242
 DB_USER=$DB_USERNAME # Redefine DB_USER with the value of DB_USERNAME e.g. if your applications expects another variable name for the lagoon provided variables
 ```
 
 ### `.lagoon.env.$BRANCHNAME`
+
 If you want to define environment variables different per environment you can create a `.lagoon.env.$BRANCHNAME` e.g. for the master branch `.lagoon.env.master`. This helps you keeping environment variables apart between environments.
 
 ### `.env` and `.env.defaults`
-`.env` and `.env.defaults` will act as the default values for environment variables if none other is defined. For example
-as default environment variables for Pull-Request environments (see [Worfklows](./workflows.md#pull-requests)).
+
+`.env` and `.env.defaults` will act as the default values for environment variables if none other is defined. For example as default environment variables for Pull-Request environments \(see [Worfklows](workflows.md#pull-requests)\).
 
 ## Special Environment Variables
 
@@ -154,3 +160,4 @@ This variable, if set, will define the logging level you would like PHP to use. 
 On production environments, this value defaults to `E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE`
 
 On development environments, this value defaults to `E_ALL & ~E_DEPRECATED & ~E_STRICT`
+
